@@ -36,6 +36,8 @@ public class TcpClientExample {
              */
             socket.connect(new InetSocketAddress("localhost", 5000));
 
+            OutputStream os = socket.getOutputStream();
+            os.write(new byte[]{'T','E','S','T'});
             /**
              * Client Data(Size 4) 전송
              * Synchronize Sequence Number: 1113 ~ 1116
@@ -49,8 +51,6 @@ public class TcpClientExample {
              * Synchronize Sequence Number: 1117 (Server 가 보낸 Acknowledgement Number)
              * Acknowledgement Number: 2224 (Server 가 보낸 Synchronize Sequence Number + 1)
              */
-            OutputStream os = socket.getOutputStream();
-            os.write(new byte[]{'T','E','S','T'});
             os.flush();
 
             /**
