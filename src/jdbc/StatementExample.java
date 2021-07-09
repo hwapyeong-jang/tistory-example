@@ -12,11 +12,14 @@ public class StatementExample {
              * (1) Parsing (문장 분석)
              * (2) Compile
              * (3) Execute
-             * Caching 이 지원되지 않고, 미리 Compile 된 Query 가 아니기 때문에 호출될 때 항상 위의 세 단계를 수행할 수 밖에 없는 구조.
+             * Caching 이 지원되지 않고, 미리 Compile 된 Query 가 아니기 때문에
+             * 호출될 때 항상 위의 세 단계를 수행할 수 밖에 없는 구조.
              * 엄밀히 말하자면, Application Layer 에서만 Caching 이 안 되는 것이다.
-             * DB 는 SQL 접근 계획 에 대해 Caching 을 하고 있다. 그러므로 DB Cache 에 있는 SQL 접근 계획과 완전히 일치하는 SQL 이 요청으로 들어온다면
+             * DB 는 SQL 접근 계획 에 대해 Caching 을 하고 있다.
+             * 그러므로 DB Cache 에 있는 SQL 접근 계획과 완전히 일치하는 SQL 이 요청으로 들어온다면
              * DB 는 SQL 접근 계획을 다시 실행하지 않고 Caching 되어 있는 접근 계획을 재사용한다.
-             * 즉, 아래 로직은 항상 같은 SQL 이 만들어지므로 첫 (2) 시도 이후에는 DB 에 Caching 된 접근 계획을 재사용한다.
+             * 즉, 아래 로직은 항상 같은 SQL 이 만들어지므로
+             * 첫 (2) 시도 이후에는 DB 에 Caching 된 접근 계획을 재사용한다.
              */
             for (int i = 0; i < 100; i++) {
                 String sql = findByNameQuery("장화평");
@@ -26,7 +29,8 @@ public class StatementExample {
             }
 
             /**
-             * i 에 의해서 SQL 이 변경되므로, DB 는 Cache 에서 SQL 접근 계획을 찾지 못해 매번 접근 계획을 다시 수행한다.
+             * i 에 의해서 SQL 이 변경되므로
+             * DB 는 Cache 에서 SQL 접근 계획을 찾지 못해 매번 접근 계획을 다시 수행한다.
              * 즉, 아래 로직은 DB 에 Caching 된 접근 계획을 재사용할 수 없다.
              */
             for (int i = 0; i < 100; i++) {
