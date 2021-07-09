@@ -1,6 +1,7 @@
 package socket;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -36,6 +37,23 @@ public class TcpClientExample {
             socket.connect(new InetSocketAddress("localhost", 5000));
 
             /**
+             * Client Data(Size 4) 전송
+             * Synchronize Sequence Number: 1113 ~ 1116
+             * Acknowledgement Number: 2223
+             *
+             * Server Data(Size 4) 수신
+             * Synchronize Sequence Number: 2223
+             * Acknowledgement Number: 1117 (Client 가 보낸 Synchronize Sequence Number + 1)
+             *
+             * Client Data 전송 모두 끝난 후
+             * Synchronize Sequence Number: 1117 (Server 가 보낸 Acknowledgement Number)
+             * Acknowledgement Number: 2224 (Server 가 보낸 Synchronize Sequence Number + 1)
+             */
+            OutputStream os = socket.getOutputStream();
+            os.write(new byte[]{'T','E','S','T'});
+            os.flush();
+
+            /**
              * Try-with-resources 방식이므로 close 명시하지 않아도 됨.
              *
              * Close 4-Way-Handshake
@@ -43,26 +61,26 @@ public class TcpClientExample {
              * FIN: Finish Flag
              *
              * (1) Client - FIN 전송
-             * Synchronize Sequence Number: 1112
-             * Acknowledgement Number: 2223
+             * Synchronize Sequence Number: 1117
+             * Acknowledgement Number: 2224
              * Client 상태: ESTABLISHED -> FIN_WAIT_1
              *
              * (2) Server - ACK 전송
-             * Synchronize Sequence Number: 2223 (Client 가 보낸 Acknowledgement Number)
-             * Acknowledgement Number: 1113 (Client 가 보낸 Synchronize Sequence Number + 1)
+             * Synchronize Sequence Number: 2224 (Client 가 보낸 Acknowledgement Number)
+             * Acknowledgement Number: 1118 (Client 가 보낸 Synchronize Sequence Number + 1)
              * Server 상태: ESTABLISHED -> CLOSE_WAIT
              * Client 상태: FIN_WAIT_1 -> FIN_WAIT_2
              *
              * (3) Server - FIN 전송
-             * Synchronize Sequence Number: 2223
-             * Acknowledgement Number: 1113
+             * Synchronize Sequence Number: 2224
+             * Acknowledgement Number: 1118
              * 단계 (2), (3) 과정에서 추가로 데이터가 전송된다면 데이터 크기만큼 Synchronize Sequence Number 증가
              * Server 상태: CLOSE_WAIT -> LAST_ACK
              * Client 상태: FIN_WAIT_2 -> TIME_WAIT
              *
              * (4) Client - ACK 전송
-             * Synchronize Sequence Number: 1113 (Server 가 보낸 Acknowledgement Number)
-             * Acknowledgement Number: 2224 (Server 가 보낸 Synchronize Sequence Number + 1)
+             * Synchronize Sequence Number: 1118 (Server 가 보낸 Acknowledgement Number)
+             * Acknowledgement Number: 2225 (Server 가 보낸 Synchronize Sequence Number + 1)
              * Client 상태: TIME_WAIT -> CLOSED
              * Server 상태: LAST_ACK -> CLOSED
              */
